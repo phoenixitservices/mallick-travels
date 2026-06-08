@@ -1,36 +1,155 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mallick Travels
 
-## Getting Started
+A modern travel booking and management platform designed for customers, travel agents, and administrators. Mallick Travels provides a seamless experience for booking travel services, managing wallets, tracking commissions, and handling travel operations from a single dashboard.
 
-First, run the development server:
+## 🌐 Live Website
+
+https://www.mallicktravel.com/
+
+## ✨ Features
+
+### Customer Portal
+- Flight Booking
+- Hotel Booking
+- Train Booking
+- Bus Booking
+- Holiday Package Requests
+- Visa Assistance Services
+- Booking History & Tracking
+- Secure User Authentication
+
+### Agent Portal
+- Agent Registration & Approval
+- Wallet-Based Booking System
+- Credit Limit Management
+- Commission Tracking
+- Transaction History
+- Booking Management
+
+### Admin Dashboard
+- User Management
+- Agent Management
+- Booking Management
+- Wallet Monitoring
+- Transaction Auditing
+- Role & Permission Management
+- Activity Logs
+
+### Wallet System
+- Wallet Recharge
+- Wallet Debit/Credit Transactions
+- Commission Credits
+- Real-Time Balance Updates
+- Transaction Reporting
+
+### Security
+- Supabase Authentication
+- Row Level Security (RLS)
+- Protected Routes
+- Role-Based Access Control (RBAC)
+
+## 🛠 Tech Stack
+
+- Next.js
+- React
+- TypeScript
+- Supabase
+- Tailwind CSS
+- shadcn/ui
+- Lucide Icons
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- npm / pnpm
+- Supabase Project
+
+### Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/phoenixitservices/mallick-travels.git
+cd mallick-travels
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+Start development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Build for production:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📂 Project Structure
 
-## Learn More
+```text
+src/
+├── app/
+├── components/
+├── context/
+├── hooks/
+├── lib/
+├── services/
+├── types/
+└── utils/
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🔐 Environment Variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Variable | Description |
+|-----------|-------------|
+| NEXT_PUBLIC_SUPABASE_URL | Supabase Project URL |
+| NEXT_PUBLIC_SUPABASE_ANON_KEY | Supabase Anon Key |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📈 Key Modules
 
-## Deploy on Vercel
+- Authentication System
+- Agent Management
+- Customer Management
+- Wallet & Transactions
+- Commission Management
+- Booking Management
+- Holiday Packages
+- Visa Services
+- Reporting & Analytics
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🤝 Contributing
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Contributions, issues, and feature requests are welcome.
+
+## 📄 License
+
+This project is proprietary software. All rights reserved.
+
+## 📞 Contact
+
+**Mallick Travels**
+
+Website: https://www.mallicktravel.com/
+
+Email: support@mallicktravel.com
+
+---
+
+Built with ❤️ by Mallick Travels
