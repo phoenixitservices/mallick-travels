@@ -131,7 +131,7 @@ export default function SignupPage() {
     }
 
     // Redirect to dashboard or home after successful registration
-    router.push("/");
+    router.push("/login");
     setLoading(false);
   }
 
