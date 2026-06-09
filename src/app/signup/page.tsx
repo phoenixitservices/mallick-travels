@@ -118,6 +118,18 @@ export default function SignupPage() {
       alert("Account created, but failed to setup user profile. Please contact support.");
     }
 
+    // 4. Assign the default role in public.user_roles
+    const { error: roleError } = await supabase
+      .from("user_roles")
+      .insert({
+        user_id: userId,
+        role: "customer",
+      });
+
+    if (roleError) {
+      console.error("Error assigning user role:", roleError);
+    }
+
     // Redirect to dashboard or home after successful registration
     router.push("/");
     setLoading(false);
