@@ -57,13 +57,13 @@ export default function SignupPage() {
     setLoading(false);
   }
 
-  // Step 3: Complete Account Setup (Auth User + Customer Record)
+  // Step 3: Complete Account Setup (Auth User + Customer Record + Profile Record)
   async function handleCompleteSetup() {
     if (!firstName || !lastName) return alert("Please enter your full name");
     if (!phone) return alert("Please enter your phone number");
     if (password !== confirmPassword) return alert("Passwords do not match");
     if (password.length < 6) return alert("Password must be at least 6 characters");
-    
+
     setLoading(true);
 
     // 1. Create the user in standard Supabase Auth
@@ -79,26 +79,43 @@ export default function SignupPage() {
       },
     });
 
-    if (authError) {
-      alert(authError.message);
+    if (authError || !authData.user) {
+      alert(authError?.message || "Failed to create user account.");
       setLoading(false);
       return;
     }
+
+    const fullName = `${firstName} ${lastName}`.trim();
+    const userId = authData.user.id;
 
     // 2. Create the Customer record in public.customers
     const { error: customerError } = await supabase
       .from("customers")
       .insert({
-        name: `${firstName} ${lastName}`.trim(),
+        name: fullName,
         email: email,
         phone: phone,
-        status: "prospect", // Default from your schema
-        created_by: authData.user?.id, // Linking to the newly created auth user
+        status: "prospect",
+        created_by: userId,
       });
 
     if (customerError) {
       console.error("Error creating customer record:", customerError);
-      alert("Account created, but failed to setup customer profile. Please contact support.");
+    }
+
+    // 3. Create the Profile record in public.profiles
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .insert({
+        id: userId, // Must match auth.users (id)
+        full_name: fullName,
+        email: email,
+        phone: phone,
+      });
+
+    if (profileError) {
+      console.error("Error creating profile record:", profileError);
+      alert("Account created, but failed to setup user profile. Please contact support.");
     }
 
     // Redirect to dashboard or home after successful registration
@@ -161,7 +178,7 @@ export default function SignupPage() {
             <p className="mt-6 max-w-md text-base leading-relaxed text-gray-300">
               Book luxury hotels, flights, tours and unforgettable travel experiences worldwide.
             </p>
-{/* 
+            {/* 
             
             <div className="mt-8 flex gap-4">
               <motion.div whileHover={{ y: -5 }} className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-lg">
@@ -189,7 +206,7 @@ export default function SignupPage() {
         {/* RIGHT */}
         <div className="flex items-center justify-center p-8">
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }} className="w-full max-w-md">
-            
+
             {/* Mobile Logo */}
             <div className="mb-8 flex items-center gap-4 lg:hidden">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600">
@@ -204,7 +221,7 @@ export default function SignupPage() {
             {/* Card */}
             <div className="rounded-[2rem] border border-white/10 bg-black/30 p-8 shadow-2xl backdrop-blur-xl relative overflow-hidden">
               <div className="mb-8">
-                
+
                 <div className="flex items-center gap-3">
                   {step > 1 && (
                     <button onClick={() => setStep(step - 1)} className="text-gray-400 hover:text-white transition">
