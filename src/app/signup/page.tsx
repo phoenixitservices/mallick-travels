@@ -19,72 +19,89 @@ export default function SignupPage() {
   const [otp, setOtp] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // Step 1: Send OTP to Email
+  // Step 1: Send OTP via Custom Edge Function
   async function handleSendOtp() {
     if (!email) return alert("Please enter an email address");
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: true, // Creates the user if they don't exist
-      },
+    const { data, error } = await supabase.functions.invoke("email-otp", {
+      body: { action: "send", email },
     });
 
-    if (error) {
-      alert(error.message);
+    if (error || !data?.success) {
+      alert(error?.message || data?.message || "Failed to send OTP");
     } else {
       setStep(2);
     }
     setLoading(false);
   }
 
-  // Step 2: Verify OTP
+  // Step 2: Verify OTP via Custom Edge Function
   async function handleVerifyOtp() {
     if (!otp) return alert("Please enter the OTP");
     setLoading(true);
 
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token: otp,
-      type: "email",
+    const { data, error } = await supabase.functions.invoke("email-otp", {
+      body: { action: "verify", email, otp },
     });
 
-    if (error) {
-      alert(error.message);
+    if (error || !data?.success) {
+      alert(error?.message || data?.message || "Invalid OTP");
     } else {
       setStep(3);
     }
     setLoading(false);
   }
 
-  // Step 3: Complete Account Setup (Name + Password)
+  // Step 3: Complete Account Setup (Auth User + Customer Record)
   async function handleCompleteSetup() {
-    if (!firstName || !lastName) return alert("Please enter your name");
+    if (!firstName || !lastName) return alert("Please enter your full name");
+    if (!phone) return alert("Please enter your phone number");
     if (password !== confirmPassword) return alert("Passwords do not match");
     if (password.length < 6) return alert("Password must be at least 6 characters");
     
     setLoading(true);
 
-    // Because verifyOtp signed the user in, we can now update their details
-    const { error } = await supabase.auth.updateUser({
+    // 1. Create the user in standard Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: email,
       password: password,
-      data: {
-        first_name: firstName,
-        last_name: lastName,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          phone: phone,
+        },
       },
     });
 
-    if (error) {
-      alert(error.message);
+    if (authError) {
+      alert(authError.message);
       setLoading(false);
       return;
     }
 
-    // Redirect to dashboard or home as they are now fully logged in and set up
+    // 2. Create the Customer record in public.customers
+    const { error: customerError } = await supabase
+      .from("customers")
+      .insert({
+        name: `${firstName} ${lastName}`.trim(),
+        email: email,
+        phone: phone,
+        status: "prospect", // Default from your schema
+        created_by: authData.user?.id, // Linking to the newly created auth user
+      });
+
+    if (customerError) {
+      console.error("Error creating customer record:", customerError);
+      alert("Account created, but failed to setup customer profile. Please contact support.");
+    }
+
+    // Redirect to dashboard or home after successful registration
     router.push("/");
     setLoading(false);
   }
@@ -280,6 +297,13 @@ export default function SignupPage() {
                           className="w-full rounded-2xl border border-white/10 bg-white/10 p-4 text-white placeholder:text-gray-400 focus:border-cyan-400 focus:outline-none"
                         />
                       </div>
+                      <input
+                        type="tel"
+                        placeholder="Phone Number"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full rounded-2xl border border-white/10 bg-white/10 p-4 text-white placeholder:text-gray-400 focus:border-cyan-400 focus:outline-none"
+                      />
                       <input
                         type="password"
                         placeholder="Create Password"
