@@ -4,7 +4,7 @@ import { useState } from "react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import BookingTabs from "@/components/booking-tabs";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Compass, ShieldCheck, Star, MapPin, Heart, ArrowRight, Clock, Mail } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/auth-context";
@@ -22,12 +22,12 @@ export default function HomePage() {
   };
 
   // Storytelling scroll animations
-  const fadeInUp = {
+  const fadeInUp: Variants = {
     hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeInOut" } }
   };
 
-  const staggerContainer = {
+  const staggerContainer: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -35,9 +35,9 @@ export default function HomePage() {
     }
   };
 
-  const storyVariant = {
+  const storyVariant: Variants = {
     hidden: { opacity: 0, x: -30 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeOut" } }
+    visible: { opacity: 1, x: 0, transition: { duration: 0.8, ease: "easeInOut" } }
   };
 
   return (
