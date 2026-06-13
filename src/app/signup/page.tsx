@@ -66,6 +66,9 @@ export default function SignupPage() {
 
     setLoading(true);
 
+    // SIGNUP ER AGEI FULL NAME TOIRI KORE NAO
+    const fullName = `${firstName} ${lastName}`.trim();
+
     // 1. Create the user in standard Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: email,
@@ -74,6 +77,7 @@ export default function SignupPage() {
         data: {
           first_name: firstName,
           last_name: lastName,
+          full_name: fullName, // <-- ETA JONGKORA HOBE, NA HOLE TRIGGER NAME PABE NA
           phone: phone,
         },
       },
@@ -85,7 +89,6 @@ export default function SignupPage() {
       return;
     }
 
-    const fullName = `${firstName} ${lastName}`.trim();
     const userId = authData.user.id;
 
     // 2. Create the Customer record in public.customers
@@ -97,37 +100,11 @@ export default function SignupPage() {
         phone: phone,
         status: "prospect",
         created_by: userId,
+        user_id: userId, // <-- LINKING CUSTOMER TO AUTH USER
       });
 
     if (customerError) {
       console.error("Error creating customer record:", customerError);
-    }
-
-    // 3. Create the Profile record in public.profiles
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .insert({
-        id: userId, // Must match auth.users (id)
-        full_name: fullName,
-        email: email,
-        phone: phone,
-      });
-
-    if (profileError) {
-      console.error("Error creating profile record:", profileError);
-      alert("Account created, but failed to setup user profile. Please contact support.");
-    }
-
-    // 4. Assign the default role in public.user_roles
-    const { error: roleError } = await supabase
-      .from("user_roles")
-      .insert({
-        user_id: userId,
-        role: "customer",
-      });
-
-    if (roleError) {
-      console.error("Error assigning user role:", roleError);
     }
 
     // Redirect to dashboard or home after successful registration
@@ -190,10 +167,10 @@ export default function SignupPage() {
             <p className="mt-6 max-w-md text-base leading-relaxed text-gray-300">
               Book luxury hotels, flights, tours and unforgettable travel experiences worldwide.
             </p>
-            {/* 
-            
+
+
             <div className="mt-8 flex gap-4">
-              <motion.div whileHover={{ y: -5 }} className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-lg">
+              {/*  <motion.div whileHover={{ y: -5 }} className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-lg">
                 <h3 className="text-2xl font-bold text-white">200+</h3>
                 <p className="text-sm text-gray-300">Destinations</p>
               </motion.div>
@@ -204,8 +181,8 @@ export default function SignupPage() {
               <motion.div whileHover={{ y: -5 }} className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur-lg">
                 <h3 className="text-2xl font-bold text-white">4.9★</h3>
                 <p className="text-sm text-gray-300">Reviews</p>
-              </motion.div>
-            </div> */}
+              </motion.div> */}
+            </div>
           </motion.div>
 
           {/* Footer */}
